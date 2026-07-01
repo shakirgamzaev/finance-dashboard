@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 interface Props {
   width: number;
   height: number;
+  className: string
 }
 
 function toRadians(degrees: number) {
@@ -30,7 +31,7 @@ function setCorrectPixels(
   return { ctx, width: cssWidth, height: cssHeight };
 }
 
-export default function AppLogo({ width, height }: Props) {
+export default function AppLogo({ width, height, className }: Props) {
   const canvasElement = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -102,5 +103,5 @@ export default function AppLogo({ width, height }: Props) {
   }, [width, height]);
 
   // `width`/`height` props set the CSS display size in CSS pixels
-  return <canvas ref={canvasElement} style={{ width, height }}></canvas>;
+  return <canvas ref={canvasElement} style={{ width, height }} className={className}></canvas>;
 }

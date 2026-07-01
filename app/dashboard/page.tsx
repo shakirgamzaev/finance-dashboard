@@ -1,8 +1,5 @@
+import { redirect } from "next/navigation";
 
-
-
-export default function MainDashBoard() {
-    return (
-        <h1>Dashboard</h1>
-    )
+export default function DashboardPage() {
+  redirect("/dashboard/overview");
 }
