@@ -7,8 +7,7 @@ export default function AuthLayout({
 }) {
   return (
     <>
-      <header className="h-[100px] bg-blue-600"></header>
-      <div>{children}</div>
+      {children}
     </>
   );
 }
