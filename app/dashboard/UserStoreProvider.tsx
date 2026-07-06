@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useRef } from "react";
 import { proxy } from "valtio";
 
@@ -9,18 +9,16 @@ export default function UserStoreProvider({
   user,
   children,
 }: {
-  user: User | string;
+  user: User;
   children: React.ReactNode;
 }) {
-  const isHydrated = useRef(false);
+  const lastSyncedUser = useRef<User | null>(null);
 
-  if (!isHydrated.current) {
-    if (typeof user === "string") {
-      userStore.user = { id: "1", name: user, email: "" };
-    } else {
-      userStore.user = user;
-    }
-    isHydrated.current = true;
+  // Re-sync whenever the server sends a different user
+  // (initial render, and after router.refresh() / revalidatePath)
+  if (lastSyncedUser.current !== user) {
+    userStore.user = user;
+    lastSyncedUser.current = user;
   }
 
   return <>{children}</>;

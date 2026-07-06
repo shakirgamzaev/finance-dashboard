@@ -5,6 +5,7 @@
   --foreground: #171717;
   --hamburgerColor: #fafafa2f;
   --faintBlue: #a4c7ff; 
+  --textGray: #606060;
 }
 
 @theme  {
@@ -14,6 +15,7 @@
   --font-mono: var(--font-geist-mono);
   --color-hamburger: var(--hamburgerColor);
   --color-faintBlue: var(--faintBlue); 
+  --color-textGray: var(--textGray);
 }
  
 @media (prefers-color-scheme: dark) {

@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect } from "react";
 
-export default function MobileItems({ isShown }: { isShown: boolean }) {
+export default function MobileNavItems({ isShown }: { isShown: boolean }) {
   const pathName = usePathname();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: pathName is intentionally a trigger to close the nav on route change, not a value read inside the effect
