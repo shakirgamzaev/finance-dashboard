@@ -1,23 +1,26 @@
 @import "tailwindcss";
+/* Font Awesome base styles — placed in the `components` layer so Tailwind
+   utilities (layer `utilities`) can override e.g. its `height: 1em` rule */
+@import "@fortawesome/fontawesome-svg-core/styles.css" layer(components);
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
   --hamburgerColor: #fafafa2f;
-  --faintBlue: #a4c7ff; 
+  --faintBlue: #a4c7ff;
   --textGray: #606060;
 }
 
-@theme  {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-hamburger: var(--hamburgerColor);
-  --color-faintBlue: var(--faintBlue); 
+  --color-faintBlue: var(--faintBlue);
   --color-textGray: var(--textGray);
 }
- 
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

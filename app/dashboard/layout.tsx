@@ -1,24 +1,28 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import AppLogo from "@/app/_components/AppLogo";
+import { auth } from "@/utils/auth";
 import { MobileNav } from "./_mobileNavViews/MobileNav";
 import UserStoreProvider, { type User } from "./UserStoreProvider";
 import Greeting from "./layoutHeaderComponents/Greeting";
 import TopHeaderCategories from "./layoutHeaderComponents/TopHeaderCategories";
-
-async function GetUser(): Promise<User> {
-  //TODO: call my server and get the user data
-  return {
-    id: "1",
-    name: "Shakir",
-    email: "fake@example.com",
-  };
-}
+import ProfileIcon from "../_components/ProfleIcon/ProfileIcon";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await GetUser();
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    redirect("/signIn");
+  }
+
+  const user: User = {
+    id: session.user.id,
+    name: session.user.name,
+    email: session.user.email,
+  };
 
   return (
     <UserStoreProvider user={user}>
@@ -34,7 +38,7 @@ export default async function DashboardLayout({
               <MobileNav></MobileNav>
               <TopHeaderCategories></TopHeaderCategories>
 
-              <p className="text-white">UIcon</p>
+              <ProfileIcon></ProfileIcon>
             </div>
 
             <Greeting user={user}></Greeting>
