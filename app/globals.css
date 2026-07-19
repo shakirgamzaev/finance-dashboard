@@ -9,6 +9,7 @@
   --hamburgerColor: #fafafa2f;
   --faintBlue: #a4c7ff;
   --textGray: #606060;
+  --addAccountDark: #111111
 }
 
 @theme {
@@ -19,6 +20,7 @@
   --color-hamburger: var(--hamburgerColor);
   --color-faintBlue: var(--faintBlue);
   --color-textGray: var(--textGray);
+  --color-addAccount: var(--addAccountDark)
 }
 
 @media (prefers-color-scheme: dark) {

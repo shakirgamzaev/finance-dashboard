@@ -1,7 +1,7 @@
 "use client";
 
-import AuthButton from "@/app/_components/AuthButton";
-import GoogleSignInBtn from "@/app/_components/GoogleSignInBtn";
+import AuthButton from "@/app/_components/CustomButtons/AuthButton";
+import GoogleSignInBtn from "@/app/_components/CustomButtons/GoogleSignInBtn";
 import InputField from "@/app/_components/InputField";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

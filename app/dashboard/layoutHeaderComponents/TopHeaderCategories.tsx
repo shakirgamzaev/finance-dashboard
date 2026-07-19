@@ -9,7 +9,16 @@ export default function TopHeaderCategories() {
   return (
     <div className="gap-4 items-center hidden lg:flex">
       {NAV_ROUTES.map((route) => {
-        return <Link href={route.href} key={route.href} className={`text-white text-[13.5px] p-2  rounded-md  ${route.href === currentPath ? `bg-white/15` : ``}`}>{route.label}</Link>;
+        const isActive = route.href === currentPath;
+        return (
+          <Link
+            href={route.href}
+            key={route.href}
+            className={`text-white text-[13.5px] p-2 rounded-md ${isActive ? `bg-white/15` : `hover:bg-white/10`}`}
+          >
+            {route.label}
+          </Link>
+        );
       })}
     </div>
   );

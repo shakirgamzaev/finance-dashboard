@@ -2,9 +2,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSnapshot } from "valtio";
-import GoogleSignInBtn from "@/app/_components/GoogleSignInBtn";
+import GoogleSignInBtn from "@/app/_components/CustomButtons/GoogleSignInBtn";
 import InputField from "@/app/_components/InputField";
-import AuthButton from "@/app/_components/AuthButton";
+import AuthButton from "@/app/_components/CustomButtons/AuthButton";
 import { signUpFormStore, resetSignUpForm } from "./signUpFormStore";
 import { authClient } from "@/utils/auth-client";
 
