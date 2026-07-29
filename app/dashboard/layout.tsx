@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import AppLogo from "@/app/_components/AppLogo";
+import GlobalToaster from "@/app/_components/GlobalToaster";
 import { auth } from "@/utils/auth";
 import { MobileNav } from "./_mobileNavViews/MobileNav";
 import UserStoreProvider, { type User } from "./UserStoreProvider";
@@ -27,7 +28,7 @@ export default async function DashboardLayout({
   return (
     <UserStoreProvider user={user}>
       <main>
-        <header className="bg-linear-to-b from-blue-800 to-blue-600 h-[250px] lg:h-auto lg:pb-6">
+        <header className="bg-linear-to-b from-blue-800 to-blue-600 h-[260px] lg:h-[280px] lg:pb-6">
           <div className="w-full max-w-[1400px] p-8 mx-auto flex flex-col">
             <div className="flex items-center justify-between mb-10">
               <AppLogo
@@ -45,6 +46,7 @@ export default async function DashboardLayout({
           </div>
         </header>
         {children}
+        <GlobalToaster></GlobalToaster>
       </main>
     </UserStoreProvider>
   );

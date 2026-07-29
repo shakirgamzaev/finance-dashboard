@@ -1,17 +1,24 @@
 "use client";
+import { faSquareCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
+import { showToast } from "@/app/dashboard/ValtioStores/toastStore";
+import { createAccount } from "@/utils/AuthMethods/accountMethods";
 import CrossMark from "../CrossMark";
-import InputField from "../InputField";
 import CustomButton from "../CustomButtons/CustomButton";
+import InputField from "../InputField";
 
 export default function MainNewAccountView({
   isOpened,
   setIsOpened,
+  onCreated,
 }: {
   isOpened: boolean;
   setIsOpened: (value: boolean) => void;
+  onCreated?: () => void;
 }) {
   const [name, setName] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (!isOpened) {
@@ -19,9 +26,32 @@ export default function MainNewAccountView({
     }
   }, [isOpened]);
 
-  function createNewAccount() {
-    //TODO, implement the add account, calling real backend
-    console.log("create new account");
+  //call fastapi backend to insert new account into the user
+  async function createNewAccount() {
+    setIsProcessing(true);
+    try {
+      await createAccount(name);
+      setIsOpened(false);
+      onCreated?.();
+      showToast(
+        <div className="flex items-center gap-2">
+          <FontAwesomeIcon icon={faSquareCheck} className="size-4" />
+          <span>Account created!</span>
+        </div>,
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  }
+
+  async function deleteAccount() {
+    //TODO, implement the delete account, calling real backend
+    setIsProcessing(true);
+    try {
+      console.log("delete account");
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   return (
@@ -61,6 +91,19 @@ export default function MainNewAccountView({
           handler={createNewAccount}
           backgroundColor="bg-addAccount"
           label="Create Account"
+          disabled={isProcessing}
+        ></CustomButton>
+
+        <CustomButton
+          handler={deleteAccount}
+          backgroundColor="bg-red-600"
+          disabled={isProcessing}
+          label={
+            <div className="flex items-center justify-center gap-2">
+              <FontAwesomeIcon icon={faTrash} className="size-3.5" />
+              <span>Delete Account</span>
+            </div>
+          }
         ></CustomButton>
       </div>
     </>
