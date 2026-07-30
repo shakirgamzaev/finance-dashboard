@@ -1,31 +1,22 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import MainNewAccountView from "@/app/_components/NewAccountView/MainNewAccount";
+import ShimmerCard from "@/app/_components/ShimmerCard";
 import type { Account } from "@/app/models/account";
-import { getAccounts } from "@/utils/AuthMethods/accountMethods";
+import {
+  deleteAccounts,
+  getAccounts,
+} from "@/utils/AuthMethods/accountMethods";
 import Header from "./Header";
-import { columns, type Payment } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "@/app/_components/DataTable/MainDataTable";
-
-const data: Payment[] = [
-  {
-    id: "728ed52f",
-    amount: 100,
-    status: "pending",
-    email: "m@example.com",
-  },
-  {
-    id: "728ed52f",
-    amount: 50,
-    status: "processing",
-    email: "a@example.com",
-  },
-];
 
 export default function MainAccountsPage() {
   const [isNewAccountsOpened, setIsNewAccountsOpened] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  //true only until the very first fetch finishes; background refetches don't touch it
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const loadAccounts = useCallback(async () => {
     try {
@@ -33,6 +24,8 @@ export default function MainAccountsPage() {
       setAccounts(data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsInitialLoading(false);
     }
   }, []);
 
@@ -40,22 +33,32 @@ export default function MainAccountsPage() {
     loadAccounts();
   }, [loadAccounts]);
 
+  if (isInitialLoading) {
+    return (
+      <div className="flex justify-center">
+        <ShimmerCard />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 pt-2 px-2 items-center">
       <div className="flex flex-col w-full max-w-212.5 justify-center -mt-17.5 gap-6 p-6 rounded-[13px] shadow-[3px_3px_8px_rgba(0,0,0,0.12)] bg-white">
         <Header setNewAccountsOpened={setIsNewAccountsOpened}></Header>
         <DataTable
           columns={columns}
-          data={data}
-          filterColumn="email"
-          filterPlaceholder="emails..."
+          data={accounts}
+          filterColumn="name"
+          filterPlaceholder="names..."
           disabled={isDeleting}
           onDelete={async (rows) => {
             setIsDeleting(true);
             try {
-              //TODO: call the fastapi delete endpoint with the selected rows
-              console.log(rows.map((row) => row.original));
+              const ids = rows.map((row) => row.original.id);
+              await deleteAccounts(ids);
               await loadAccounts();
+            } catch (error) {
+              console.error(error);
             } finally {
               setIsDeleting(false);
             }

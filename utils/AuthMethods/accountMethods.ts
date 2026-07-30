@@ -33,3 +33,21 @@ export async function getAccounts(): Promise<Account[]> {
   }
   return res.json();
 }
+
+export async function deleteAccounts(
+  ids: number[],
+): Promise<{ deleted: number }> {
+  const token = await getAccessToken();
+  const res = await fetch(`${BACKEND_URL}/accounts/deleteAll`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ids }),
+  });
+  if (!res.ok) {
+    throw new Error(`Deleting accounts failed: ${res.status}`);
+  }
+  return res.json();
+}
