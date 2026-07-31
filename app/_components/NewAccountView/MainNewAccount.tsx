@@ -3,6 +3,7 @@ import { faSquareCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { showToast } from "@/app/dashboard/ValtioStores/toastStore";
+import type { Account } from "@/app/models/account";
 import { createAccount } from "@/utils/AuthMethods/accountMethods";
 import CrossMark from "../CrossMark";
 import CustomButton from "../CustomButtons/CustomButton";
@@ -12,19 +13,23 @@ export default function MainNewAccountView({
   isOpened,
   setIsOpened,
   onCreated,
+  account,
 }: {
   isOpened: boolean;
   setIsOpened: (value: boolean) => void;
   onCreated?: () => void;
+  account?: Account | null;
 }) {
+  const isEditing = account != null;
   const [name, setName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
+  //prefill on open (edit mode) and keep the current text during the close animation
   useEffect(() => {
-    if (!isOpened) {
-      setName("");
+    if (isOpened) {
+      setName(account?.name ?? "");
     }
-  }, [isOpened]);
+  }, [isOpened, account]);
 
   //call fastapi backend to insert new account into the user
   async function createNewAccount() {
@@ -70,11 +75,15 @@ export default function MainNewAccountView({
         } grid grid-cols-1 auto-rows-min gap-y-2`}
       >
         <div className="flex justify-between">
-          <h2 className="font-bold">New Account</h2>
+          <h2 className="font-bold">
+            {isEditing ? "Edit Account" : "New Account"}
+          </h2>
           <CrossMark size={15} onClick={() => setIsOpened(false)} />
         </div>
         <p className="text-[0.8rem] text-gray-500 justify-self-start">
-          Create a new account to track your transactions
+          {isEditing
+            ? "Edit the name of your account"
+            : "Create a new account to track your transactions"}
         </p>
 
         <InputField

@@ -1,5 +1,6 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { DataTable } from "@/app/_components/DataTable/MainDataTable";
 import MainNewAccountView from "@/app/_components/NewAccountView/MainNewAccount";
 import ShimmerCard from "@/app/_components/ShimmerCard";
 import type { Account } from "@/app/models/account";
@@ -7,13 +8,14 @@ import {
   deleteAccounts,
   getAccounts,
 } from "@/utils/AuthMethods/accountMethods";
+import { getColumns } from "./columns";
 import Header from "./Header";
-import { columns } from "./columns";
-import { DataTable } from "@/app/_components/DataTable/MainDataTable";
 
 export default function MainAccountsPage() {
   const [isNewAccountsOpened, setIsNewAccountsOpened] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  //account being edited via the row actions menu; null means "create new" mode
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   //true only until the very first fetch finishes; background refetches don't touch it
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -33,6 +35,15 @@ export default function MainAccountsPage() {
     loadAccounts();
   }, [loadAccounts]);
 
+  const columns = useMemo(
+    () =>
+      getColumns((account) => {
+        setEditingAccount(account);
+        setIsNewAccountsOpened(true);
+      }),
+    [],
+  );
+
   if (isInitialLoading) {
     return (
       <div className="flex justify-center">
@@ -44,7 +55,12 @@ export default function MainAccountsPage() {
   return (
     <div className="flex flex-col gap-4 pt-2 px-2 items-center">
       <div className="flex flex-col w-full max-w-212.5 justify-center -mt-17.5 gap-6 p-6 rounded-[13px] shadow-[3px_3px_8px_rgba(0,0,0,0.12)] bg-white">
-        <Header setNewAccountsOpened={setIsNewAccountsOpened}></Header>
+        <Header
+          setNewAccountsOpened={(value) => {
+            setEditingAccount(null);
+            setIsNewAccountsOpened(value);
+          }}
+        ></Header>
         <DataTable
           columns={columns}
           data={accounts}
@@ -69,6 +85,7 @@ export default function MainAccountsPage() {
         isOpened={isNewAccountsOpened}
         setIsOpened={setIsNewAccountsOpened}
         onCreated={loadAccounts}
+        account={editingAccount}
       />
     </div>
   );

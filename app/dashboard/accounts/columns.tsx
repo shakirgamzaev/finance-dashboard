@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Actions } from "./actions";
 
-export const columns: ColumnDef<Account>[] = [
+export const getColumns = (
+  onEdit: (account: Account) => void,
+): ColumnDef<Account>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -44,6 +46,8 @@ export const columns: ColumnDef<Account>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <Actions id={row.original.id}></Actions>
-  }
+    cell: ({ row }) => (
+      <Actions account={row.original} onEdit={onEdit}></Actions>
+    ),
+  },
 ];

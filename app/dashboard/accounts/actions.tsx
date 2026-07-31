@@ -1,5 +1,6 @@
 "use client";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import type { Account } from "@/app/models/account";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,10 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type Props = {
-  id: string;
+  account: Account;
+  onEdit: (account: Account) => void;
 };
 
-export const Actions = ({ id }: Props) => {
+export const Actions = ({ account, onEdit }: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -21,7 +23,7 @@ export const Actions = ({ id }: Props) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => {console.log()}}>
+        <DropdownMenuItem onClick={() => onEdit(account)}>
           <Pencil className="size-4" />
           Edit
         </DropdownMenuItem>
