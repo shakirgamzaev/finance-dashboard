@@ -3,55 +3,55 @@ import { faSquareCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { showToast } from "@/app/dashboard/ValtioStores/toastStore";
-import type { Account } from "@/app/models/account";
+import type { Category } from "@/app/models/category";
 import {
-  createAccount,
-  deleteAccount as deleteAccountRequest,
-  updateAccount,
-} from "@/utils/AuthMethods/accountMethods";
+  createCategory,
+  deleteCategory as deleteCategoryRequest,
+  updateCategory,
+} from "@/utils/AuthMethods/categoryMethods";
 import CrossMark from "../CrossMark";
 import CustomButton from "../CustomButtons/CustomButton";
 import InputField from "../InputField";
 
-export default function MainNewAccountView({
+export default function MainNewCategoryView({
   isOpened,
   setIsOpened,
   onCreated,
   onDeleted,
-  account,
+  category,
 }: {
   isOpened: boolean;
   setIsOpened: (value: boolean) => void;
   onCreated?: () => void;
   onDeleted?: () => void;
-  account?: Account | null;
+  category?: Category | null;
 }) {
-  const isEditing = account != null;
+  const isEditing = category != null;
   const [name, setName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   //prefill on open (edit mode) and keep the current text during the close animation
   useEffect(() => {
     if (isOpened) {
-      setName(account?.name ?? "");
+      setName(category?.name ?? "");
     }
-  }, [isOpened, account]);
+  }, [isOpened, category]);
 
-  //creates a new account, or renames the existing one when in edit mode
-  async function saveAccount() {
+  //creates a new category, or renames the existing one when in edit mode
+  async function saveCategory() {
     setIsProcessing(true);
     try {
       if (isEditing) {
-        await updateAccount(account.id, name);
+        await updateCategory(category.id, name);
       } else {
-        await createAccount(name);
+        await createCategory(name);
       }
       setIsOpened(false);
       onCreated?.();
       showToast(
         <div className="flex items-center gap-2">
           <FontAwesomeIcon icon={faSquareCheck} className="size-4" />
-          <span>{isEditing ? "Account updated!" : "Account created!"}</span>
+          <span>{isEditing ? "Category updated!" : "Category created!"}</span>
         </div>,
       );
     } finally {
@@ -59,17 +59,17 @@ export default function MainNewAccountView({
     }
   }
 
-  async function deleteAccount() {
+  async function deleteCategory() {
     if (!isEditing) return;
     setIsProcessing(true);
     try {
-      await deleteAccountRequest(account.id);
+      await deleteCategoryRequest(category.id);
       setIsOpened(false);
       onDeleted?.();
       showToast(
         <div className="flex items-center gap-2">
           <FontAwesomeIcon icon={faSquareCheck} className="size-4" />
-          <span>Account deleted!</span>
+          <span>Category deleted!</span>
         </div>,
       );
     } finally {
@@ -94,14 +94,14 @@ export default function MainNewAccountView({
       >
         <div className="flex justify-between">
           <h2 className="font-bold">
-            {isEditing ? "Edit Account" : "New Account"}
+            {isEditing ? "Edit Category" : "New Category"}
           </h2>
           <CrossMark size={15} onClick={() => setIsOpened(false)} />
         </div>
         <p className="text-[0.8rem] text-gray-500 justify-self-start">
           {isEditing
-            ? "Edit the name of your account"
-            : "Create a new account to track your transactions"}
+            ? "Edit the name of your category"
+            : "Create a new category to organize your transactions"}
         </p>
 
         <InputField
@@ -110,26 +110,26 @@ export default function MainNewAccountView({
           type="text"
           value={name}
           onChange={setName}
-          placeholderText="e.g Cash,Bank"
+          placeholderText="e.g Food,Rent"
           extraCSS="mt-2"
         />
 
         <CustomButton
-          handler={saveAccount}
+          handler={saveCategory}
           backgroundColor="bg-addAccount"
-          label={isEditing ? "Save Changes" : "Create Account"}
+          label={isEditing ? "Save Changes" : "Create Category"}
           disabled={isProcessing}
         ></CustomButton>
 
         {isEditing && (
           <CustomButton
-            handler={deleteAccount}
+            handler={deleteCategory}
             backgroundColor="bg-red-600"
             disabled={isProcessing}
             label={
               <div className="flex items-center justify-center gap-2">
                 <FontAwesomeIcon icon={faTrash} className="size-3.5" />
-                <span>Delete Account</span>
+                <span>Delete Category</span>
               </div>
             }
           ></CustomButton>

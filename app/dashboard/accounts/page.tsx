@@ -5,6 +5,7 @@ import MainNewAccountView from "@/app/_components/NewAccountView/MainNewAccount"
 import ShimmerCard from "@/app/_components/ShimmerCard";
 import type { Account } from "@/app/models/account";
 import {
+  deleteAccount,
   deleteAccounts,
   getAccounts,
 } from "@/utils/AuthMethods/accountMethods";
@@ -37,11 +38,24 @@ export default function MainAccountsPage() {
 
   const columns = useMemo(
     () =>
-      getColumns((account) => {
-        setEditingAccount(account);
-        setIsNewAccountsOpened(true);
-      }),
-    [],
+      getColumns(
+        (account) => {
+          setEditingAccount(account);
+          setIsNewAccountsOpened(true);
+        },
+        async (account) => {
+          setIsDeleting(true);
+          try {
+            await deleteAccount(account.id);
+            await loadAccounts();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsDeleting(false);
+          }
+        },
+      ),
+    [loadAccounts],
   );
 
   if (isInitialLoading) {
@@ -85,6 +99,7 @@ export default function MainAccountsPage() {
         isOpened={isNewAccountsOpened}
         setIsOpened={setIsNewAccountsOpened}
         onCreated={loadAccounts}
+        onDeleted={loadAccounts}
         account={editingAccount}
       />
     </div>

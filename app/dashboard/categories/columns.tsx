@@ -2,15 +2,15 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import type { Account } from "@/app/models/account";
+import type { Category } from "@/app/models/category";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Actions } from "./actions";
 
 export const getColumns = (
-  onEdit: (account: Account) => void,
-  onDelete: (account: Account) => void,
-): ColumnDef<Account>[] => [
+  onEdit: (category: Category) => void,
+  onDelete: (category: Category) => void,
+): ColumnDef<Category>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -49,7 +49,7 @@ export const getColumns = (
     id: "actions",
     cell: ({ row }) => (
       <Actions
-        account={row.original}
+        category={row.original}
         onEdit={onEdit}
         onDelete={onDelete}
       ></Actions>
