@@ -18,11 +18,13 @@ type Props = {
 export const Actions = ({ account, onEdit, onDelete }: Props) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant={"ghost"} className="size-7 p-0">
-          <MoreHorizontal className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button variant={"ghost"} className="size-7 p-0">
+            <MoreHorizontal className="size-4" />
+          </Button>
+        }
+      />
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => onEdit(account)}>
           <Pencil className="size-4" />

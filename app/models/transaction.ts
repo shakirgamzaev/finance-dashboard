@@ -10,6 +10,8 @@ export type Transaction = {
   //amount in the account's currency (e.g. dollars), negative for outflows
   amount: number;
   notes: string | null;
+  //ISO date string (YYYY-MM-DD) of when the transaction occurred
+  date: string;
 };
 
 //payload sent when creating or updating a transaction
@@ -19,6 +21,7 @@ export type TransactionPayload = {
   payee: string;
   amount: number;
   notes: string | null;
+  date: string;
 };
 
 //transaction enriched with the resolved account/category names for display

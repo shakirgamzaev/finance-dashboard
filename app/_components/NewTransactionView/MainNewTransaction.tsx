@@ -1,11 +1,19 @@
 "use client";
 import { faSquareCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { showToast } from "@/app/dashboard/ValtioStores/toastStore";
 import type { Account } from "@/app/models/account";
 import type { Category } from "@/app/models/category";
 import type { Transaction } from "@/app/models/transaction";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { createAccount } from "@/utils/AuthMethods/accountMethods";
 import { createCategory } from "@/utils/AuthMethods/categoryMethods";
 import {
@@ -17,6 +25,30 @@ import ComboboxField, { type ComboboxOption } from "../ComboboxField";
 import CrossMark from "../CrossMark";
 import CustomButton from "../CustomButtons/CustomButton";
 import InputField from "../InputField";
+
+//format a Date as a local YYYY-MM-DD string (avoids UTC day shifts)
+function toISODate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+//parse a YYYY-MM-DD string as a local Date
+function parseISODate(value: string): Date {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  if (match) {
+    return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  }
+  return new Date(value);
+}
+
+//readable label shown on the date picker button
+const dateLabelFormatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
 
 export default function MainNewTransactionView({
   isOpened,
@@ -46,6 +78,8 @@ export default function MainNewTransactionView({
   const [payee, setPayee] = useState("");
   const [amount, setAmount] = useState("");
   const [notes, setNotes] = useState("");
+  const [date, setDate] = useState<Date>(new Date());
+  const [isDateOpen, setIsDateOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   //prefill on open (edit mode) and keep values during the close animation
@@ -58,6 +92,7 @@ export default function MainNewTransactionView({
       setPayee(transaction?.payee ?? "");
       setAmount(transaction != null ? String(transaction.amount) : "");
       setNotes(transaction?.notes ?? "");
+      setDate(transaction?.date ? parseISODate(transaction.date) : new Date());
     }
   }, [isOpened, transaction, accounts, categories]);
 
@@ -95,6 +130,7 @@ export default function MainNewTransactionView({
         payee,
         amount: Number(amount) || 0,
         notes: notes.trim() === "" ? null : notes,
+        date: toISODate(date),
       };
       if (isEditing) {
         await updateTransaction(transaction.id, payload);
@@ -174,6 +210,36 @@ export default function MainNewTransactionView({
             ? "Edit the details of your transaction"
             : "Add a new transaction to track your spending"}
         </p>
+
+        <div style={{ gap: "3px" }} className="flex flex-col w-full mt-2">
+          <p className="text-[0.78rem] md:text-[0.9rem]">Date</p>
+          <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
+            <PopoverTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="justify-between border-[1.4px] border-[rgba(0,0,0,0.1)] font-normal shadow-xs text-[14px]"
+                >
+                  {dateLabelFormatter.format(date)}
+                  <CalendarIcon className="size-4 shrink-0 opacity-50" />
+                </Button>
+              }
+            />
+            <PopoverContent align="start" className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={(selected) => {
+                  if (selected) {
+                    setDate(selected);
+                    setIsDateOpen(false);
+                  }
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
         <ComboboxField
           gap={3}

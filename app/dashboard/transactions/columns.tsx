@@ -13,6 +13,18 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
+//formats an ISO date string (YYYY-MM-DD) as a readable date for display
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
+function formatDate(value: string) {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? value : dateFormatter.format(parsed);
+}
+
 export const getColumns = (
   onEdit: (transaction: TransactionRow) => void,
   onDelete: (transaction: TransactionRow) => void,
@@ -36,6 +48,21 @@ export const getColumns = (
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: "date",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => formatDate(row.original.date),
   },
   {
     accessorKey: "payee",
@@ -73,11 +100,6 @@ export const getColumns = (
       );
     },
     cell: ({ row }) => currencyFormatter.format(row.original.amount),
-  },
-  {
-    accessorKey: "notes",
-    header: "Notes",
-    cell: ({ row }) => row.original.notes ?? "",
   },
   {
     id: "actions",
