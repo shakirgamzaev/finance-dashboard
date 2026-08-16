@@ -4,14 +4,30 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCSVReader } from "react-papaparse";
 import CustomButton from "@/app/_components/CustomButtons/CustomButton";
 
-export default function UploadButton() {
+//parsed CSV contents: header names in file order + one object per row keyed by header
+export type CsvUpload = {
+  headers: string[];
+  rows: Record<string, string>[];
+};
+
+type UploadButtonProps = {
+  onUploaded: (upload: CsvUpload) => void;
+};
+
+export default function UploadButton({ onUploaded }: UploadButtonProps) {
   const { CSVReader } = useCSVReader();
 
   return (
     <CSVReader
-      onUploadAccepted={(results: { data: string[][] }) => {
-        // TODO: map parsed rows to transactions and send to the backend
-        console.log(results.data);
+      config={{ header: true, skipEmptyLines: true }}
+      onUploadAccepted={(results: {
+        data: Record<string, string>[];
+        meta: { fields?: string[] };
+      }) => {
+        onUploaded({
+          headers: results.meta.fields ?? Object.keys(results.data[0] ?? {}),
+          rows: results.data,
+        });
       }}
     >
       {({ getRootProps }: { getRootProps: () => Record<string, unknown> }) => (
