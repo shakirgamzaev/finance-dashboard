@@ -1,4 +1,8 @@
-import type { Transaction, TransactionPayload } from "@/app/models/transaction";
+import type {
+  Transaction,
+  TransactionPayload,
+  TransactionSummary,
+} from "@/app/models/transaction";
 import { getAccessToken } from "./accessToken";
 
 //url of the fast api server, read from environment variable
@@ -21,7 +25,7 @@ export async function createTransaction(payload: TransactionPayload) {
 }
 
 export async function updateTransaction(
-  id: number,
+  id: string,
   payload: TransactionPayload,
 ) {
   const token = await getAccessToken();
@@ -53,7 +57,34 @@ export async function getTransactions(): Promise<Transaction[]> {
   return res.json();
 }
 
-export async function deleteTransaction(id: number): Promise<void> {
+//formats a Date as an ISO YYYY-MM-DD string for the backend date query params
+function toISODate(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+export async function getTransactionSummary(
+  start: Date,
+  end: Date,
+  token?: string,
+): Promise<TransactionSummary> {
+  const authToken = token ?? (await getAccessToken());
+  const params = new URLSearchParams({
+    start: toISODate(start),
+    end: toISODate(end),
+  });
+  const res = await fetch(`${BACKEND_URL}/transactions/summary?${params}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Fetching transaction summary failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
   const token = await getAccessToken();
   const res = await fetch(`${BACKEND_URL}/transactions/${id}`, {
     method: "DELETE",
@@ -67,7 +98,7 @@ export async function deleteTransaction(id: number): Promise<void> {
 }
 
 export async function deleteTransactions(
-  ids: number[],
+  ids: string[],
 ): Promise<{ deleted: number }> {
   const token = await getAccessToken();
   const res = await fetch(`${BACKEND_URL}/transactions/deleteAll`, {

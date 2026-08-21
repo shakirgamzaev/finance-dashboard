@@ -2,8 +2,8 @@
 
 //matches the TransactionRead pydantic model (/transactions endpoints)
 export type Transaction = {
-  userId: number;
-  id: number;
+  userId: string;
+  id: string;
   accountId: number;
   categoryId: number | null;
   payee: string;
@@ -28,4 +28,14 @@ export type TransactionPayload = {
 export type TransactionRow = Transaction & {
   accountName: string;
   categoryName: string;
+};
+
+//matches the TransactionSummary pydantic model (/transactions/summary endpoint)
+export type TransactionSummary = {
+  //sum of positive transaction amounts in the range
+  income: number;
+  //sum of negative transaction amounts (<= 0) in the range
+  expenses: number;
+  //income + expenses (income minus absolute expenses)
+  remaining: number;
 };

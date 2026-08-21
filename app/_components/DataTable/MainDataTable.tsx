@@ -1,21 +1,19 @@
 "use client";
 
-import * as React from "react";
-
 import {
   type ColumnDef,
+  type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  type SortingState,
-  getSortedRowModel,
-  type ColumnFiltersState,
   getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
   type Row,
+  type SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
-
 import { Trash2 } from "lucide-react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -45,6 +43,9 @@ export function DataTable<TData, TValue>({
   onDelete,
   disabled,
 }: DataTableProps<TData, TValue>) {
+  //TanStack Table v8 mutates the table instance during render, which React
+  //Compiler can't track — memoized output goes stale when `columns` changes
+  "use no memo";
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],

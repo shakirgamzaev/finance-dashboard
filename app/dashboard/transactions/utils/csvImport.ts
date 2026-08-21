@@ -1,18 +1,31 @@
 import type { TransactionPayload } from "@/app/models/transaction";
 import type { CsvUpload } from "../uploadButton";
 
-//TransactionPayload fields that can be filled from a CSV column
+//TransactionPayload fields that can be filled from a CSV column;
+//required ones mirror the backend TransactionCreate model (payee/amount/date non-nullable)
 export const CSV_FIELD_OPTIONS = [
-  { value: "date", label: "Date" },
-  { value: "payee", label: "Payee" },
-  { value: "amount", label: "Amount" },
-  { value: "notes", label: "Notes" },
+  { value: "date", label: "Date", required: true },
+  { value: "payee", label: "Payee", required: true },
+  { value: "amount", label: "Amount", required: true },
+  { value: "notes", label: "Notes", required: false },
 ] as const;
 
 export type CsvField = (typeof CSV_FIELD_OPTIONS)[number]["value"];
 
+export const REQUIRED_CSV_FIELDS = CSV_FIELD_OPTIONS.filter(
+  (option) => option.required,
+);
+
 //csv header -> payload field it fills; null means the column is skipped
 export type CsvMapping = Record<string, CsvField | null>;
+
+//labels of required fields not yet mapped to any CSV column
+export function missingRequiredFields(mapping: CsvMapping): string[] {
+  const mapped = new Set(Object.values(mapping));
+  return CSV_FIELD_OPTIONS.filter(
+    (option) => option.required && !mapped.has(option.value),
+  ).map((option) => option.label);
+}
 
 //assign a field to a header, unassigning it from any other header first
 export function assignField(

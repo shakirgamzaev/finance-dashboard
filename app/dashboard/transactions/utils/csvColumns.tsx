@@ -30,8 +30,14 @@ export function getCsvColumns(
             render={
               <Button variant="ghost" className="px-2 font-medium">
                 {header}
-                <span className="text-xs text-muted-foreground">
-                  {mappedLabel ?? "Skip"}
+                <span
+                  className={
+                    mappedLabel
+                      ? "text-xs font-semibold text-green-600"
+                      : "text-xs text-muted-foreground"
+                  }
+                >
+                  {mappedLabel ? `→ ${mappedLabel}` : "Skip"}
                 </span>
                 <ChevronDown className="size-3.5 opacity-50" />
               </Button>
@@ -47,6 +53,11 @@ export function getCsvColumns(
                 onClick={() => onAssign(header, option.value)}
               >
                 {option.label}
+                {option.required && (
+                  <span className="text-xs text-muted-foreground">
+                    required
+                  </span>
+                )}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

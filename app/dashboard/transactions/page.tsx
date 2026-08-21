@@ -33,6 +33,8 @@ import {
   buildCsvPayloads,
   type CsvField,
   type CsvMapping,
+  missingRequiredFields,
+  REQUIRED_CSV_FIELDS,
 } from "./utils/csvImport";
 
 export default function MainTransactionsPage() {
@@ -189,6 +191,18 @@ export default function MainTransactionsPage() {
     [csvUpload, csvMapping, assignCsvField],
   );
 
+  //everything still needed before the import can run; empty means ready
+  const missingImportSteps = useMemo(() => {
+    const missing = missingRequiredFields(csvMapping).map(
+      (label) => `${label} column`,
+    );
+    if (importAccount == null) missing.unshift("Account");
+    return missing;
+  }, [csvMapping, importAccount]);
+
+  const mappedRequiredCount =
+    REQUIRED_CSV_FIELDS.length - missingRequiredFields(csvMapping).length;
+
   if (isInitialLoading) {
     return (
       <div className="flex justify-center">
@@ -215,7 +229,7 @@ export default function MainTransactionsPage() {
             <div className="flex flex-col lg:flex-row gap-3">
               <ComboboxField
                 gap={3}
-                label="Account"
+                label="Account (required)"
                 value={importAccount}
                 options={accounts}
                 onSelect={setImportAccount}
@@ -245,12 +259,34 @@ export default function MainTransactionsPage() {
               data={csvUpload.rows}
               onDelete={() => {}}
             ></DataTable>
+            <div className="flex flex-col gap-1">
+              <p className="text-[0.8rem] text-gray-500">
+                Click a column header to choose which transaction field it
+                fills; columns left on "Skip" are not imported.
+              </p>
+              <p
+                className={`text-[0.8rem] font-medium ${
+                  mappedRequiredCount === REQUIRED_CSV_FIELDS.length
+                    ? "text-green-600"
+                    : "text-gray-700"
+                }`}
+              >
+                {mappedRequiredCount}/{REQUIRED_CSV_FIELDS.length} required
+                columns mapped
+                {missingImportSteps.length > 0 && (
+                  <span className="font-normal text-gray-500">
+                    {" "}
+                    — still select: {missingImportSteps.join(", ")}
+                  </span>
+                )}
+              </p>
+            </div>
             <div className="flex flex-col lg:flex-row gap-3">
               <CustomButton
                 handler={importCsv}
                 label="Import"
                 backgroundColor="bg-addAccount"
-                disabled={isImporting}
+                disabled={isImporting || missingImportSteps.length > 0}
                 extraCSS="lg:w-auto"
               />
               <CustomButton
