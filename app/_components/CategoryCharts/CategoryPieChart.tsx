@@ -36,6 +36,14 @@ function formatCurrency(value: number): string {
 }
 
 export default function CategoryPieChart({ data }: Props) {
+  if (data.length === 0) {
+    return (
+      <div className="flex h-75 items-center justify-center text-sm text-gray-400">
+        No expenses for this period
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <RePieChart>

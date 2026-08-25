@@ -39,3 +39,19 @@ export type TransactionSummary = {
   //income + expenses (income minus absolute expenses)
   remaining: number;
 };
+
+//matches TransactionSeriesPoint (/transactions/series endpoint); one point per day
+export type TransactionSeriesPoint = {
+  //ISO date string (YYYY-MM-DD)
+  date: string;
+  income: number;
+  //positive magnitude
+  expenses: number;
+};
+
+//matches CategoryExpense (/transactions/categories endpoint)
+export type CategoryExpense = {
+  name: string;
+  //positive magnitude spent in the category
+  value: number;
+};

@@ -1,11 +1,12 @@
 import { PiggyBank, TrendingUp, TrendingDown } from "lucide-react";
-import { getTransactionSummary } from "@/utils/AuthMethods/transactionMethods";
+import {
+  getExpensesByCategory,
+  getTransactionSeries,
+  getTransactionSummary,
+} from "@/utils/AuthMethods/transactionMethods";
 import { getServerAccessToken } from "@/utils/AuthMethods/serverToken";
-import type { ChartDataPoint } from "@/app/_components/DataCharts/chart";
 import ChartSwitcher from "@/app/_components/DataCharts/ChartSwitcher";
-import CategoryPieChart, {
-  type CategorySlice,
-} from "@/app/_components/CategoryCharts/CategoryPieChart";
+import CategoryPieChart from "@/app/_components/CategoryCharts/CategoryPieChart";
 import OverviewCard from "./OverviewCard";
 
 //percent change from previous to current; 0 when there is no prior baseline
@@ -14,51 +15,48 @@ function percentChange(current: number, previous: number): number {
   return ((current - previous) / Math.abs(previous)) * 100;
 }
 
-//placeholder daily series for the range until a time-series endpoint exists
-function buildPlaceholderChartData(
-  start: Date,
-  days: number,
-): ChartDataPoint[] {
-  return Array.from({ length: days }, (_, i) => {
-    const d = new Date(start);
-    d.setDate(d.getDate() + i);
-    return {
-      date: d.toISOString().slice(0, 10),
-      income: 100 + (i % 7) * 40,
-      expenses: 60 + (i % 5) * 30,
-    };
-  });
+//parses YYYY-MM-DD at local midnight; undefined if missing/invalid
+function parseDateParam(value: string | undefined): Date | undefined {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
+  const d = new Date(`${value}T00:00:00`);
+  return Number.isNaN(d.getTime()) ? undefined : d;
 }
 
-export default async function MainOverviewPage() {
-  const rangeEnd = new Date();
-  const rangeStart = new Date(rangeEnd);
-  rangeStart.setMonth(rangeStart.getMonth() - 1);
+export default async function MainOverviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string; to?: string }>;
+}) {
+  const { from, to } = await searchParams;
 
-  //previous period: the month immediately before the current range
+  //default range: last 30 days ending today
+  const parsedFrom = parseDateParam(from);
+  const parsedTo = parseDateParam(to);
+  const rangeEnd = parsedTo ?? new Date();
+  let rangeStart: Date;
+  if (parsedFrom) {
+    rangeStart = parsedFrom;
+  } else {
+    rangeStart = new Date(rangeEnd);
+    rangeStart.setMonth(rangeStart.getMonth() - 1);
+  }
+
+  //previous period: same length, immediately before the current range
   const prevEnd = rangeStart;
-  const prevStart = new Date(prevEnd);
-  prevStart.setMonth(prevStart.getMonth() - 1);
+  const prevStart = new Date(
+    rangeStart.getTime() - (rangeEnd.getTime() - rangeStart.getTime()),
+  );
 
   const token = await getServerAccessToken();
-  const [summary, prevSummary] = await Promise.all([
+  const [summary, prevSummary, chartData, categoryData] = await Promise.all([
     getTransactionSummary(rangeStart, rangeEnd, token),
     getTransactionSummary(prevStart, prevEnd, token),
+    getTransactionSeries(rangeStart, rangeEnd, token),
+    getExpensesByCategory(rangeStart, rangeEnd, token),
   ]);
 
-  const chartData = buildPlaceholderChartData(rangeStart, 30);
-
-  //placeholder category breakdown until a per-category endpoint exists
-  const categoryData: CategorySlice[] = [
-    { name: "Rent", value: 1200 },
-    { name: "Groceries", value: 460 },
-    { name: "Transport", value: 180 },
-    { name: "Dining", value: 240 },
-    { name: "Utilities", value: 150 },
-  ];
-
   return (
-    <div className="pt-2 px-4 lg:px-5 -mt-16 relative z-10 pb-6">
+    <div className="pt-2 px-4 lg:px-5 -mt-7 relative z-10 pb-6 lg:-mt-11">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <OverviewCard
           title="Remaining"

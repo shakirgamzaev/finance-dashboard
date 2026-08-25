@@ -1,6 +1,8 @@
 import type {
+  CategoryExpense,
   Transaction,
   TransactionPayload,
+  TransactionSeriesPoint,
   TransactionSummary,
 } from "@/app/models/transaction";
 import { getAccessToken } from "./accessToken";
@@ -43,9 +45,17 @@ export async function updateTransaction(
   return res.json();
 }
 
-export async function getTransactions(): Promise<Transaction[]> {
+//start/end are ISO YYYY-MM-DD strings; omitted -> no date filtering
+export async function getTransactions(
+  start?: string | null,
+  end?: string | null,
+): Promise<Transaction[]> {
   const token = await getAccessToken();
-  const res = await fetch(`${BACKEND_URL}/transactions`, {
+  const params = new URLSearchParams();
+  if (start) params.set("start", start);
+  if (end) params.set("end", end);
+  const query = params.size > 0 ? `?${params}` : "";
+  const res = await fetch(`${BACKEND_URL}/transactions${query}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -80,6 +90,50 @@ export async function getTransactionSummary(
   });
   if (!res.ok) {
     throw new Error(`Fetching transaction summary failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function getTransactionSeries(
+  start: Date,
+  end: Date,
+  token?: string,
+): Promise<TransactionSeriesPoint[]> {
+  const authToken = token ?? (await getAccessToken());
+  const params = new URLSearchParams({
+    start: toISODate(start),
+    end: toISODate(end),
+  });
+  const res = await fetch(`${BACKEND_URL}/transactions/series?${params}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Fetching transaction series failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function getExpensesByCategory(
+  start: Date,
+  end: Date,
+  token?: string,
+): Promise<CategoryExpense[]> {
+  const authToken = token ?? (await getAccessToken());
+  const params = new URLSearchParams({
+    start: toISODate(start),
+    end: toISODate(end),
+  });
+  const res = await fetch(`${BACKEND_URL}/transactions/categories?${params}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Fetching category expenses failed: ${res.status}`);
   }
   return res.json();
 }

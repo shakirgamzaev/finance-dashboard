@@ -1,5 +1,5 @@
 import type { User } from "../UserStoreProvider";
-
+import DateRangePicker from "./DateRangePicker";
 
 export default function Greeting({ user }: { user: User }) {
   return (
@@ -10,6 +10,7 @@ export default function Greeting({ user }: { user: User }) {
       <p className="text-faintBlue text-[13px]">
         This is your Financial Overview Report
       </p>
+      <DateRangePicker />
     </div>
   );
 }

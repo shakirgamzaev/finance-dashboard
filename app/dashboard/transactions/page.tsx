@@ -1,6 +1,7 @@
 "use client";
 import { faSquareCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ComboboxField, {
   type ComboboxOption,
@@ -61,6 +62,11 @@ export default function MainTransactionsPage() {
   );
   const [isImporting, setIsImporting] = useState(false);
 
+  //date range from the header picker; refetches from the backend when it changes
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+  const to = searchParams.get("to");
+
   //assign a field to a header, unassigning it from any other header first
   const assignCsvField = useCallback(
     (header: string, field: CsvField | null) => {
@@ -71,12 +77,12 @@ export default function MainTransactionsPage() {
 
   const loadTransactions = useCallback(async () => {
     try {
-      const data = await getTransactions();
+      const data = await getTransactions(from, to);
       setTransactions(data);
     } catch (error) {
       console.error(error);
     }
-  }, []);
+  }, [from, to]);
 
   //leave import-preview mode and clear all import state
   const resetCsvState = useCallback(() => {
@@ -213,7 +219,7 @@ export default function MainTransactionsPage() {
 
   return (
     <div className="flex flex-col gap-4 pt-2 px-2 items-center">
-      <div className="flex flex-col w-full max-w-212.5 justify-center -mt-17.5 gap-6 p-6 rounded-[13px] shadow-[3px_3px_8px_rgba(0,0,0,0.12)] bg-white">
+      <div className="flex flex-col w-full max-w-212.5 justify-center -mt-7 gap-6 p-6 rounded-[13px] shadow-[3px_3px_8px_rgba(0,0,0,0.12)] bg-white">
         <Header
           setNewTransactionsOpened={(value) => {
             setEditingTransaction(null);

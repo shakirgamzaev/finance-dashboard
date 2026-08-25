@@ -68,7 +68,7 @@ export default function MainAccountsPage() {
 
   return (
     <div className="flex flex-col gap-4 pt-2 px-2 items-center">
-      <div className="flex flex-col w-full max-w-212.5 justify-center -mt-17.5 gap-6 p-6 rounded-[13px] shadow-[3px_3px_8px_rgba(0,0,0,0.12)] bg-white">
+      <div className="flex flex-col w-full max-w-212.5 justify-center -mt-7 gap-6 p-6 rounded-[13px] shadow-[3px_3px_8px_rgba(0,0,0,0.12)] bg-white">
         <Header
           setNewAccountsOpened={(value) => {
             setEditingAccount(null);

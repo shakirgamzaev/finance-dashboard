@@ -21,7 +21,9 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 });
 
 function formatDate(value: string) {
-  const parsed = new Date(value);
+  //date-only strings parsed bare are treated as UTC and can display a day early
+  const iso = /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00` : value;
+  const parsed = new Date(iso);
   return Number.isNaN(parsed.getTime()) ? value : dateFormatter.format(parsed);
 }
 
@@ -99,7 +101,21 @@ export const getColumns = (
         </Button>
       );
     },
-    cell: ({ row }) => currencyFormatter.format(row.original.amount),
+    cell: ({ row }) => {
+      const amount = row.original.amount;
+      const isPositive = amount >= 0;
+      return (
+        <span
+          className={`inline-block rounded-full px-2.5 py-1 text-[13px] font-semibold ${
+            isPositive
+              ? "bg-green-500/10 text-green-700"
+              : "bg-red-500/10 text-red-700"
+          }`}
+        >
+          {currencyFormatter.format(amount)}
+        </span>
+      );
+    },
   },
   {
     id: "actions",

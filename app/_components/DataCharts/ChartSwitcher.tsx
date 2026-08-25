@@ -31,6 +31,8 @@ type Props = {
 export default function ChartSwitcher({ data }: Props) {
   const [type, setType] = useState<ChartType>("area");
   const current = OPTIONS.find((o) => o.type === type) ?? OPTIONS[0];
+  //gap-filled series is all zeros when there are no transactions
+  const hasData = data.some((d) => d.income !== 0 || d.expenses !== 0);
 
   return (
     <>
@@ -56,9 +58,14 @@ export default function ChartSwitcher({ data }: Props) {
         </DropdownMenu>
       </div>
 
-      {type === "area" && <Chart data={data} />}
-      {type === "line" && <LineChart data={data} />}
-      {type === "bar" && <BarChart data={data} />}
+      {!hasData && (
+        <div className="flex h-75 items-center justify-center text-sm text-gray-400">
+          No transactions for this period
+        </div>
+      )}
+      {hasData && type === "area" && <Chart data={data} />}
+      {hasData && type === "line" && <LineChart data={data} />}
+      {hasData && type === "bar" && <BarChart data={data} />}
     </>
   );
 }
