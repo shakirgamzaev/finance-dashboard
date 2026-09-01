@@ -1,5 +1,6 @@
 import type {
   CategoryExpense,
+  SpendingInsight,
   Transaction,
   TransactionPayload,
   TransactionSeriesPoint,
@@ -165,6 +166,28 @@ export async function deleteTransactions(
   });
   if (!res.ok) {
     throw new Error(`Deleting transactions failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function getSpendingInsights(
+  start: Date,
+  end: Date,
+  token?: string,
+): Promise<SpendingInsight> {
+  const authToken = token ?? (await getAccessToken());
+  const params = new URLSearchParams({
+    start: toISODate(start),
+    end: toISODate(end),
+  });
+  const res = await fetch(`${BACKEND_URL}/transactions/insight?${params}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Error fetching from LLM: ${res.status}`);
   }
   return res.json();
 }

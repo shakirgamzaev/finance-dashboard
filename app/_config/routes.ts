@@ -8,5 +8,5 @@ export const NAV_ROUTES: Route[] = [
   { label: "Transactions", href: "/dashboard/transactions" },
   { label: "Accounts", href: "/dashboard/accounts" },
   { label: "Categories", href: "/dashboard/categories" },
-  { label: "Settings", href: "/dashboard/settings" },
+  //{ label: "Settings", href: "/dashboard/settings" },
 ];

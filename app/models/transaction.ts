@@ -55,3 +55,15 @@ export type CategoryExpense = {
   //positive magnitude spent in the category
   value: number;
 };
+
+//matches FlagsInsight pydantic model
+export type FlagsInsight = {
+  text: string;
+  severity: "high" | "medium" | "low";
+};
+
+//matches SpendingInsight pydantic model (/insight endpoint)
+export type SpendingInsight = {
+  flags: FlagsInsight[];
+  suggestion: string;
+};

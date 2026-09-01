@@ -13,7 +13,12 @@ export default function SignIn() {
   const formSnap = useSnapshot(signInFormStore);
   const router = useRouter();
 
-  function googleSignIn() {}
+  function googleSignIn() {
+    authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
+  }
 
   async function emailPasswordSignIn() {
     signInFormStore.error = undefined;

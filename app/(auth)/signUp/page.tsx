@@ -13,7 +13,10 @@ export default function SignUp() {
   const router = useRouter();
 
   function googleSignUp() {
-    //TODO: will implement it later
+    authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
   }
 
   async function signUp() {
