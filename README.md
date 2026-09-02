@@ -6,11 +6,11 @@ A full-stack personal finance dashboard for tracking accounts, categories, and t
 
 ## Features
 
-- 📊 **Overview dashboard** — income/expenses/remaining balance cards, area/line/bar charts, category breakdown pie chart, all filterable by custom date range (persisted via URL query params).
-- 🤖 **AI Spending Insights** — an LLM analyzes your transaction data for the selected period and surfaces flagged spending patterns (severity-tagged) plus a personalized suggestion, streamed in independently of the rest of the page via React Suspense.
-- 💳 **Accounts, Categories & Transactions** — full CRUD with searchable comboboxes, inline creation, and CSV import for bulk transaction upload.
-- 🔐 **Authentication** — email/password and Google OAuth sign-in via [better-auth](https://www.better-auth.com/), with JWT-based auth between the frontend and backend.
-- 📱 **Responsive UI** — mobile nav drawer, adaptive layouts, shadcn/ui (Base UI primitives) + Tailwind v4.
+-  **Overview dashboard** — income/expenses/remaining balance cards, area/line/bar charts, category breakdown pie chart, all filterable by custom date range (persisted via URL query params).
+-  **AI Spending Insights** — an LLM analyzes your transaction data for the selected period and surfaces flagged spending patterns (severity-tagged) plus a personalized suggestion, streamed in independently of the rest of the page via React Suspense.
+-  **Accounts, Categories & Transactions** — full CRUD with searchable comboboxes, inline creation, and CSV import for bulk transaction upload.
+-  **Authentication** — email/password and Google OAuth sign-in via [better-auth](https://www.better-auth.com/), with JWT-based auth between the frontend and backend.
+-  **Responsive UI** — mobile nav drawer, adaptive layouts, shadcn/ui (Base UI primitives) + Tailwind v4.
 
 ## Tech Stack
 
